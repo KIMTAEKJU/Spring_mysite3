@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="guestbook"> <!-- insert id가 똑같을수있어서 그걸 구분해주기위해 네임스페이스 필요 --> 
+	<insert id="insert" parameterType="guestbookvo"> <!--  이타입의 객체를 여기다 매핑 미리 타입을 매핑해둠 configuration.xml에 -->
+		<selectKey keyProperty="no" resultType="long" order="AFTER"> <!--  나온느값을 vo에다 세팅 밑에쿼리르 실행하고 이걸실행하기위해 order를 정해줌 -->
+			<!-- KEY PROPERTY는 밑에 쿼리 실행하고 저장할 속성명  리절트타입은 그 속성명의 타입 -->
+			<![CDATA[
+				select last_insert_id()
+			]]>
+		</selectKey>
+		<![CDATA[
+			insert into guestbook values (null, #{name}, #{password}, #{message}, now())
+		]]>
+	</insert>
+	
+	<select id="getList" resultType="guestbookvo">
+		<![CDATA[
+			select no, name, date_format(reg_date, '%Y-%m-%d %h:%i%s') as regDate, message 
+				from guestbook 
+					order by regDate desc
+		]]>		
+	</select>
+	
+	<delete id="delete" parameterType="guestbookvo">
+		<![CDATA[
+			delete from guestbook where no = #{no} and password = #{password}
+		]]>
+	</delete>
+</mapper> 

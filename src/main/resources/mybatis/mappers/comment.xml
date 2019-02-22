@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="comment">
+	<select id="getCommentList" parameterType="long" resultType="commentvo">
+		<![CDATA[
+			select no, name, contents, write_date as writeDate, user_no as userNo, board_no as boardNo, depth 
+				from comment 
+					where board_no = #{no} order by g_no asc, o_no asc
+		]]>
+	</select>
+	
+	<insert id="insertComment" parameterType="commentvo">
+		<![CDATA[
+			insert into comment 
+				values(null, #{contents}, now(), #{boardNo}, #{userNo}, #{name}, #{password}, (select ifnull(max(g_no)+1,1) from comment a), 1, 0)
+		]]>
+		
+	</insert>
+	
+	<update id="modifyComment" parameterType="commentvo">
+		<![CDATA[
+			update comment set contents = #{contents} where no = #{commentNo} and
+		]]>
+		
+		<choose>
+			<when test="password == null">
+				user_no = #{userNo}
+			</when>
+			
+			<otherwise>
+				password = #{password}
+			</otherwise>
+		</choose>
+	</update>
+	
+	<delete id="deleteComment" parameterType="commentvo">
+		<![CDATA[
+			delete from comment where no = #{commentNo} and
+		]]>
+		<choose>
+			<when test="password == null">
+				user_no = ${userNo};
+			</when>
+			
+			<otherwise>
+				password = #{password}
+			</otherwise>
+		</choose>
+	</delete>
+	
+	<select id="replyCommentInfo" parameterType="string" resultType="commentvo">
+		<![CDATA[
+			select no, g_no as gNo, o_no as oNo, depth from comment where no = #{no}
+		]]>
+	</select>
+	
+	<select id="replyCommentCheck" parameterType="commentvo" resultType="string">
+		<![CDATA[
+			select min(o_no) from comment where g_no = #{gNo} and o_no > #{oNo} and depth <= #{depth}
+		]]>
+	</select>
+	
+	<select id="replyCommentGetMaxONO" parameterType="long" resultType="commentvo">
+		<![CDATA[
+			select max(o_no) + 1 as oNo from comment where g_no = #{gNo}
+		]]>
+	</select>
+	
+	<update id="ONOGreaterThanEqual" parameterType="commentvo">
+		<![CDATA[
+			update comment set o_no = o_no + 1 where g_no = #{gNo} and o_no >= #{oNo}
+		]]>
+	</update>
+
+
+</mapper> 

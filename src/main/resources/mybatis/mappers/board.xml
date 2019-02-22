@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="board">
+	<select id="getTotalCount" parameterType="string" resultType="long">
+		<![CDATA[
+			SELECT COUNT(*)
+					FROM
+					(SELECT COUNT(*)
+							FROM
+							board a, user b 
+					    		WHERE a.user_no = b.no
+					    			AND (a.title LIKE '%${_parameter}%' 
+					 				OR a.contents LIKE '%${_parameter}%'
+					            	OR b.name LIKE '%${_parameter}%')
+								GROUP BY a.no
+								ORDER BY a.g_no DESC , a.o_no ASC) a
+		]]>
+		<!--  <if test="_parameter != null and _parameter != ''">
+			where title like '%${keyword}%'                                                                                                                                                                                                                                                                                
+			 and contents like '%${keyword}%' '%안%' 이걸 전부다 만들어서 들어왔다면 #{keyword}로 써주면되지만 아니니까 '%${keyword}%'
+		</if>
+		-->
+	</select>
+	
+	<select id="getViewInfo" parameterType="long" resultType="boardvo">
+		<![CDATA[
+			select title, contents, user_no as userNo from board where no = #{no}
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="map">
+		<selectKey keyProperty="no" resultType="string" order="AFTER"> <!--  나온느값을 vo에다 세팅 밑에쿼리르 실행하고 이걸실행하기위해 order를 정해줌 -->
+			<!-- KEY PROPERTY는 밑에 쿼리 실행하고 저장할 속성명  리절트타입은 그 속성명의 타입 -->
+			<![CDATA[
+				select max(no) from board
+			]]>
+		</selectKey>
+		<choose>
+			<when test="gNo == null">
+				<![CDATA[
+					insert into board 
+						values (null, #{title}, #{contents}, now(), 0, (select ifnull(max(g_no)+1,1) from board a), 1, 0, #{userNo})
+				]]>
+				
+			</when>
+			<otherwise>
+				<![CDATA[
+					insert into board values (null, #{title}, #{contents}, now(), 0, #{gNo}, #{oNo}, #{depth}, #{userNo})
+				]]>
+			</otherwise>
+		</choose>
+	</insert>
+	
+	<select id="getGnoOno" parameterType="string" resultType="boardvo">
+		<![CDATA[
+			select g_no as gNo, o_no as oNo, depth from board where no = #{no}
+		]]>
+	</select>
+	
+	<update id="replyWrite" parameterType="boardvo">
+		<![CDATA[
+			update board set o_no = #{oNo} + 1 where g_no = #{gNo} and o_no >= #{oNo}
+		]]>
+	</update>
+	
+	<update id="modifyWrite" parameterType="map">
+		<![CDATA[
+			update board set title = #{title}, contents = #{contents} where no = #{no} and user_no = #{userNo}
+		]]>
+	</update>
+	
+	<delete id="deleteWrite" parameterType="boardvo">
+		<![CDATA[
+			delete from board where no = #{no} and user_no = #{userNo}
+		]]>
+		
+	</delete>
+	
+	<select id="getMaxBoardNo" resultType="string">
+		<![CDATA[
+			select max(no) from board;
+		]]>
+	</select>
+	
+</mapper> 
