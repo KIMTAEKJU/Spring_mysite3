@@ -134,10 +134,22 @@ public class BoardService
 		System.out.println("삭제 : " + bDao.delete(bVo));
 	}
 
-	public void commentWrite(CommentVo cVo)
+	public void commentWrite(CommentVo cVo, UserVo uVo)
 	{
+		String password = null;
+		
+		if( uVo != null)
+		{
+			password = getPassword(uVo.getNo());
+			System.out.println("password : " + password);
+			cVo.setPassword(password);
+		}
+		
+		cVo.setPassword(cVo.getPassword());
+
 		if( cVo.getUserNo().equals(""))
 			cVo.setUserNo(null);
+		
 		System.out.println("%$#%@^#@^ cVo name : " + cVo.getName());
 		cDao.insert(cVo);
 	}

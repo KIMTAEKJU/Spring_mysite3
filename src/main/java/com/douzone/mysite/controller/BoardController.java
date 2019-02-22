@@ -106,19 +106,13 @@ public class BoardController
 			 				   @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 			 				   HttpSession session)
 	{
-		String password = null;
-		if( session.getAttribute("authuser") != null)
-			password = boardService.getPassword( ((UserVo)session.getAttribute("authuser")).getNo());
-		
-		System.out.println("password : " + password);
-		
-		
 		System.out.println("cVo contents : " + cVo.getContents());
 		System.out.println("cVo boardNo : " + cVo.getBoardNo());
 		System.out.println("cVo name : " + cVo.getName());
 		System.out.println("cVo userNo : " + cVo.getUserNo());
+		System.out.println("cVo password : " + cVo.getPassword());
 
-		boardService.commentWrite(cVo);
+		boardService.commentWrite(cVo, (UserVo)session.getAttribute("authuser"));
 		System.out.println("cVo boardNo : " + cVo.getBoardNo());
 		return "redirect:/board/view?boardNo=" + cVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
 	}
@@ -135,7 +129,6 @@ public class BoardController
 		model.addAttribute("session", session.getAttribute("authuser"));
 		model.addAttribute("page", page);
 		model.addAttribute("kwd", kwd);
-		System.out.println("여기까진 오겠지");
 		return "/board/commentModify";
 	}
 	
@@ -177,15 +170,19 @@ public class BoardController
 //		}
 	}
 	
-	@RequestMapping(value = {"/commentDelete/{commentNo}/{boardNo}/{userNo}", "/commentDelete/{commentNo}/{boardNo}"}, method = RequestMethod.POST )
-	public String commentDelete(@ModelAttribute CommentVo cVo, HttpSession session)
+	@RequestMapping(value = "/commentDelete", method = RequestMethod.POST )
+	public String commentDelete(@ModelAttribute CommentVo cVo,
+								@RequestParam(value = "page", required = false) String page,
+								@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
+								HttpSession session)
 	{	
 		System.out.println("시발");
 		System.out.println("cVo : " + cVo.getBoardNo());
 		System.out.println("cVo : " + cVo.getCommentNo());
+		System.out.println("cVo password : " + cVo.getPassword());
 
 		boardService.commentDelete(cVo);
-		return "redirect:/board/view/" + cVo.getBoardNo();
+		return "redirect:/board/view?boardNo=" + cVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
 	}
 	
 	@RequestMapping(value = "/commentReply/{commentNo}/{boardNo}", method = RequestMethod.GET)

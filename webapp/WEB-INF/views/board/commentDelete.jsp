@@ -16,7 +16,7 @@
 		<c:import url="/WEB-INF/views/includes/header.jsp"/>
 		<div id="content">
 			<div id="guestbook" class="delete-form">
-				<form method="post" action="${pageContext.servletContext.contextPath}/board/commentDelete/${commentNo}/${boardNo}">
+				<form method="post" action="${pageContext.servletContext.contextPath}/board/commentDelete?commentNo=${commentNo}&boardNo=${boardNo}&page=${param.page}&kwd=${kwd}">
 					<label>비밀번호</label>
 					<input type="password" name="password">
 					<input type="submit" value="확인">
