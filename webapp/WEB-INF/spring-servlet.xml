@@ -11,16 +11,45 @@
    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
    <!-- validator(값 맞는 지 확인), conversionService, messageConverter를 자동 등록 -->
-   <mvc:annotation-driven />
+   <mvc:annotation-driven>
+   		
+   		<!-- Controller의 Handler의 Argument Resolver 등록 -->
+   		<mvc:argument-resolvers>
+   			<bean class="com.douzone.security.AuthUserHandlerMethodArgumentResolver"></bean>
+   		</mvc:argument-resolvers>
+   </mvc:annotation-driven>
 
    <!-- 서블릿 컨테이너의 디폴트 서블릿 위임 핸들러 -->
    <mvc:default-servlet-handler />
 
-   <context:annotation-config /> <!-- @Controller를 찾겠다 -->
-   <!-- 어노테이션붙은애들 스캔 -->
-   <context:component-scan
-      base-package="com.douzone.mysite.controller" /> <!-- 이밑에있는거만 스캔 -->
-
+	<!-- interceptors -->
+	<mvc:interceptors>
+		
+		<!-- MyInterceptor01 
+		<mvc:interceptor>
+			<mvc:mapping path="/guestbook/**"/>  게스트북으로가는 모든놈은 이제 인터셉터에 걸림
+			<bean class="com.douzone.mysite.interceptor.MyInterceptor02"/>
+		</mvc:interceptor> -->
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/user/auth"/> <!-- 게스트북으로가는 모든놈은 이제 인터셉터에 걸림 -->
+			<bean class="com.douzone.security.AuthLoginInterceptor"/>
+		</mvc:interceptor>
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/user/logout"/> 
+			<bean class="com.douzone.security.AuthLogoutInterceptor"/>
+		</mvc:interceptor>
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<mvc:exclude-mapping path="/user/auth"/>
+			<mvc:exclude-mapping path="/user/logout"/> <!-- 위 2개는 핸들러가 없어서 에러나기떄문에 미리 제외 -->
+			<mvc:exclude-mapping path="/assets/*"/>
+			<bean class="com.douzone.security.AuthInterceptor"/>
+		</mvc:interceptor>
+		
+	</mvc:interceptors>
    <!--본 뷰(이름) 리졸버 설정 -->
    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
       <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
@@ -28,4 +57,10 @@
       <property name="suffix" value=".jsp" />
       <property name="order" value="1"/>  
    </bean> 
+   
+   <context:annotation-config /> <!-- @Controller를 찾겠다 -->
+   <!-- 어노테이션붙은애들 스캔 -->
+   <context:component-scan
+      base-package="com.douzone.mysite.controller" /> <!-- 이밑에있는거만 스캔 -->
+   
 </beans>

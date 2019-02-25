@@ -8,7 +8,16 @@ public class UserVo
 	private String password;
 	private String gender;
 	private String joinDate;
+	private String role;
 	
+	
+	
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
 	public Long getNo() {
 		return no;
 	}

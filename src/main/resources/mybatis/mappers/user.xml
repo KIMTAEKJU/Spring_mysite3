@@ -5,13 +5,13 @@
 <mapper namespace="user"> 
 	<insert id="insert" parameterType="uservo"> <!--  이타입의 객체를 여기다 매핑 미리 타입을 매핑해둠 configuration.xml에 -->
 		<![CDATA[
-			insert into user values (null, #{name}, #{email}, #{password}, #{gender}, now())
+			insert into user values (null, #{name}, #{email}, #{password}, #{gender}, now(), 'USER');
 		]]>
 	</insert>
 	
 	<select id="getByEmailAndPassword" parameterType="map" resultType="uservo">  <!-- 결과가 2개이상 나오면 에러 uservo에 2개를 담아주지만 -->
 		<![CDATA[
-			select no, name from user where email=#{email} and password=#{password} 
+			select no, name, role from user where email=#{email} and password=#{password} 
 		]]>
 	</select>
 	

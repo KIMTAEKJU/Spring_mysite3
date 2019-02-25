@@ -22,6 +22,7 @@ import com.douzone.mysite.service.BoardService;
 import com.douzone.mysite.vo.BoardVo;
 import com.douzone.mysite.vo.CommentVo;
 import com.douzone.mysite.vo.UserVo;
+import com.douzone.security.Auth;
 
 @Controller
 @RequestMapping("/board")
@@ -65,6 +66,7 @@ public class BoardController
 		return "board/view";
 	}
 	
+	@Auth
 	@RequestMapping(value = "/write", method = RequestMethod.GET)
 	public String write(@RequestParam(value = "page", required = false) String page,
 						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
@@ -75,6 +77,7 @@ public class BoardController
 		return "/board/write";
 	}
 	
+	@Auth
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
 	public String write(@ModelAttribute BoardVo bVo, 
 						@RequestParam(value = "page", required = false) String page,
@@ -88,6 +91,7 @@ public class BoardController
 				"&kwd=" + kwd;
 	}
 	
+	@Auth
 	@RequestMapping("/delete")
 	public String delete(HttpSession session, 
 						 @RequestParam(value = "page", required = false) String page,
@@ -211,6 +215,7 @@ public class BoardController
 		return "redirect:/board/view/" + cVo.getBoardNo(); 
 	}
 	
+	@Auth
 	@RequestMapping(value = "/modify", method = RequestMethod.GET)
 	public String modify(@ModelAttribute BoardVo bVo,
 						 @RequestParam(value = "page", required = false) String page,
@@ -223,6 +228,7 @@ public class BoardController
 		return "board/modify";
 	}
 	
+	@Auth
 	@RequestMapping(value = "/modify", method = RequestMethod.POST)
 	public String modify(@ModelAttribute BoardVo bVo,
 						 @RequestParam(value = "page", required = false) String page,
@@ -234,6 +240,7 @@ public class BoardController
 		return "redirect:/board/view?boardNo=" + bVo.getNo() + "&page=" + page + "&kwd=" + kwd;
 	}
 	
+	@Auth
 	@RequestMapping(value = "/reply", method = RequestMethod.GET)
 	public String reply(@ModelAttribute BoardVo bVo,
 						@RequestParam(value = "page", required = false) String page,
@@ -246,6 +253,7 @@ public class BoardController
 		return "board/reply";
 	}
 	
+	@Auth
 	@RequestMapping(value = "/reply", method = RequestMethod.POST)
 	public String reply(@ModelAttribute BoardVo bVo, 
 						@RequestParam(value = "page", required = false) String page,
