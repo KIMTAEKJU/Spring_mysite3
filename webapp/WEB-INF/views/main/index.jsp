@@ -18,7 +18,7 @@
 		<div id="wrapper">
 			<div id="content">
 				<div id="site-introduction">
-					<img id="profile" src="${pageContext.servletContext.contextPath}/assets/images/dooly.jpg" style="width:120px">
+					<img id="profile" src="${pageContext.servletContext.contextPath}${site.profile}" style="width:120px">
 					<h2>${site.welcome }</h2>
 					<p>
 						${site.description }<br><br>

@@ -15,16 +15,16 @@
 		<div id="wrapper">
 			<div id="content">
 				<div id="site-form">
-					<form method="post" action="${pageContext.request.contextPath }/admin/main/update">
+					<form method="post" action="${pageContext.request.contextPath }/admin/main" enctype="multipart/form-data">
 						<label class="block-label" for="title">사이트 타이틀</label>
 						<input id="title" name="title" type="text" value="${siteVo.title }">
 						
 						<label class="block-label" for="welcomeMessage">환영 메세지</label>
-						<input id="welcomeMessage" name="welcome" type="text" value="${siteVo.welcome }">
+						<input id="welcome" name="welcome" type="text" value="${siteVo.welcome }">
 
 						<label class="block-label">프로필 이미지</label>
-						<img id="profile" src="${pageContext.request.contextPath }/${siteVo.profile }">
-						<input type="file" name="file1">
+						<img id="profile" style="width:100px" onerror="this.src='${pageContext.request.contextPath }/assets/images/default_profile.png'" src="${siteVo.profile }">
+						<input type="file" name="upload-profile">
 
 						<label class="block-label">사이트 설명</label>
 						<textarea name="description">${siteVo.description }</textarea>
