@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import com.douzone.mysite.vo.BoardVo;
 import com.douzone.mysite.vo.CommentVo;
 import com.douzone.mysite.vo.UserVo;
 import com.douzone.security.Auth;
+import com.douzone.security.Auth.Role;
 
 @Controller
 @RequestMapping("/board")
@@ -50,33 +52,25 @@ public class BoardController
 	
 	@RequestMapping("/view")
 	public String view(@ModelAttribute BoardVo bVo, 
-					   @RequestParam(value = "page", required = false, defaultValue = "1") String page,
-					   @RequestParam(value = "boardNo", required = false) String boardNo,
-					   @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 					   Model model, 
 					   HttpSession session)
 	{
-		Map<String, Object> map = boardService.view(Long.parseLong(boardNo));
+		Map<String, Object> map = boardService.view(bVo.getNo());
 		
 		model.addAttribute("list", map.get("list"));
 		model.addAttribute("listComment", map.get("listComment"));
 		model.addAttribute("session", session.getAttribute("authuser"));
-		model.addAttribute("no", boardNo);
-		model.addAttribute("page", page);
 		return "board/view";
 	}
 	
 	@Auth
 	@RequestMapping(value = "/write", method = RequestMethod.GET)
-	public String write(@RequestParam(value = "page", required = false) String page,
-						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-						Model model)
+	public String write(Model model)
 	{
-		model.addAttribute("page", page);
-		model.addAttribute("kwd", kwd);
 		return "/board/write";
 	}
 	
+	@Transactional
 	@Auth
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
 	public String write(@ModelAttribute BoardVo bVo, 
@@ -84,7 +78,7 @@ public class BoardController
 						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 						HttpSession session)
 	{
-		System.out.println("!@#@!# kwd : " + kwd);
+		//System.out.println("!@#@!# kwd : " + kwd);
 		return "redirect:/board/view?boardNo=" + 
 				boardService.write(bVo, (UserVo)session.getAttribute("authuser")) + 
 				"&page=" + page + 
@@ -110,15 +104,16 @@ public class BoardController
 			 				   @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 			 				   HttpSession session)
 	{
-		System.out.println("cVo contents : " + cVo.getContents());
-		System.out.println("cVo boardNo : " + cVo.getBoardNo());
-		System.out.println("cVo name : " + cVo.getName());
-		System.out.println("cVo userNo : " + cVo.getUserNo());
-		System.out.println("cVo password : " + cVo.getPassword());
+//		System.out.println("cVo contents : " + cVo.getContents());
+//		System.out.println("cVo boardNo : " + cVo.getBoardNo());
+//		System.out.println("cVo name : " + cVo.getName());
+//		System.out.println("cVo userNo : " + cVo.getUserNo());
+//		System.out.println("cVo password : " + cVo.getPassword());
 
 		boardService.commentWrite(cVo, (UserVo)session.getAttribute("authuser"));
-		System.out.println("cVo boardNo : " + cVo.getBoardNo());
+		//System.out.println("cVo boardNo : " + cVo.getBoardNo());
 		return "redirect:/board/view?boardNo=" + cVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
+		//return "redirect:/board/view/"+cVo.getBoardNo();
 	}
 	
 	@RequestMapping(value = "/commentModify", method = RequestMethod.GET)
@@ -180,10 +175,9 @@ public class BoardController
 								@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 								HttpSession session)
 	{	
-		System.out.println("시발");
-		System.out.println("cVo : " + cVo.getBoardNo());
-		System.out.println("cVo : " + cVo.getCommentNo());
-		System.out.println("cVo password : " + cVo.getPassword());
+//		System.out.println("cVo : " + cVo.getBoardNo());
+//		System.out.println("cVo : " + cVo.getCommentNo());
+//		System.out.println("cVo password : " + cVo.getPassword());
 
 		boardService.commentDelete(cVo);
 		return "redirect:/board/view?boardNo=" + cVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
@@ -235,7 +229,7 @@ public class BoardController
 						 @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 						 HttpSession session)
 	{
-		System.out.println("#$%#$%$#%#$% kwd : " + kwd);
+		//System.out.println("#$%#$%$#%#$% kwd : " + kwd);
 		boardService.modify(bVo, session);
 		return "redirect:/board/view?boardNo=" + bVo.getNo() + "&page=" + page + "&kwd=" + kwd;
 	}
@@ -261,7 +255,7 @@ public class BoardController
 						Model model,
 						HttpSession session)
 	{		
-		System.out.println("$@#$@#$@#$ kwd : " + kwd);
+		//System.out.println("$@#$@#$@#$ kwd : " + kwd);
 		return "redirect:/board/view?boardNo=" + boardService.reply(bVo, session) + "&page=" + page + "&kwd=" + kwd;
 	}
 	

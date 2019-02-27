@@ -47,11 +47,14 @@
 		<constructor-arg index="0" ref="sqlSessionFactory" /> <!-- 인덱스는 세션팩토리도받고 스트링도받아야한다면  -->
 		<!--  <constructor-arg index="0" ref="sqlSessionFactory" />  파라미터가 2개일때 파라미터 순서 구분하기위해서 -->
 	</bean>
-
+	
+	<!--  auto proxy -->
+	 <aop:aspectj-autoproxy />
+	 
 	<context:annotation-config />
 
 	<context:component-scan
-		base-package="com.douzone.mysite.repository, com.douzone.mysite.service, com.douzone.mysite.exception"> <!-- 좀더 빨리 스캐닝 -->
+		base-package="com.douzone.mysite.repository, com.douzone.mysite.service, com.douzone.mysite.exception, com.douzone.mysite.aspect"> <!-- 좀더 빨리 스캐닝 -->
 
 		<context:include-filter type="annotation"
 

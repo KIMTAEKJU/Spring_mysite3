@@ -53,6 +53,8 @@ public class BoardService
 
 		long totalCount = bpfd.getTotalCount(kwd);
 		
+		if( totalCount == 0)
+			totalCount = 1;
 		// 화면에 보여줄 게시물수
 		int listCount = 5;
 
@@ -99,6 +101,9 @@ public class BoardService
 		result.setPage(page);
 		result.setStartPage(startPage);
 		result.setEndPage(endPage);
+		
+		for (int i = 0; i < list.size(); i++)
+			System.out.println(list.get(i).getoNo());
 		
 		Map<String, Object> map = new HashMap<>();
 		map.put("list", list);

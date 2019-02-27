@@ -16,21 +16,14 @@
 					</c:when >
 					
 					<c:otherwise>
-						<c:choose>
-							<c:when test='${authuser.role eq "USER" }'>
-								<li><a href="${pageContext.servletContext.contextPath}/user/modify">회원정보수정</a><li>
-								<li><a href="${pageContext.servletContext.contextPath}/user/logout">로그아웃</a><li>
-								<li>${authuser.name}님 안녕하세요 ^^;</li>
-							</c:when>
-							
-							<c:otherwise>
-								<li><a href="${pageContext.servletContext.contextPath}/admin">관리자 페이지</a><li>
-								<li><a href="${pageContext.servletContext.contextPath}/user/modify">회원정보수정</a><li>
-								<li><a href="${pageContext.servletContext.contextPath}/user/logout">로그아웃</a><li>
-								<li>${authuser.name}님 안녕하세요 ^^;</li>
-							</c:otherwise>
-						</c:choose>
-						
+					
+						<c:if test='${authuser.role eq "ADMIN"}'>
+							<li><a href="${pageContext.servletContext.contextPath}/admin">관리자 페이지</a><li>
+						</c:if>
+						<li><a href="${pageContext.servletContext.contextPath}/user/modify">회원정보수정</a><li>
+						<li><a href="${pageContext.servletContext.contextPath}/user/logout">로그아웃</a><li>
+						<li>${authuser.name}님 안녕하세요 ^^;</li>
+
 					</c:otherwise>
 						
 				</c:choose>

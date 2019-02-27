@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>mysite</title>
+<title>${siteTitle }</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link href="${pageContext.servletContext.contextPath }/assets/css/board.css" rel="stylesheet" type="text/css">
 </head>

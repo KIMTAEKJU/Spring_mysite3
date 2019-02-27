@@ -18,7 +18,7 @@
 	<hr>
 	
 	<p style="color:#f00">
-		${errors }
+		${exception }
 	</p>
 </body>
 </html>

@@ -25,7 +25,9 @@ public class GuestBookDao
 	public long insert(GuestBookVo vo)
 	{
 		int count = sqlSession.insert("guestbook.insert", vo);
+		System.out.println("count : " + count);
 		long no = vo.getNo();
+		System.out.println("no : " + no);
 		return no;
 	}
 	
@@ -38,5 +40,15 @@ public class GuestBookDao
 	public List<GuestBookVo> getList()
 	{
 		return sqlSession.selectList("guestbook.getList");
-	}	
+	}
+	
+	public GuestBookVo getSelect(long no)
+	{
+		return sqlSession.selectOne("guestbook.getSelect", no);
+	}
+	
+	public List<GuestBookVo> getTimelineSelect(long page)
+	{
+		return sqlSession.selectList("guestbook.getTimelineSelect", page);
+	}
 }

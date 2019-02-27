@@ -40,19 +40,27 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 
+		<!-- spring mvc -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
 
+		<!-- spring aspect -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
 		<!-- spring jdbc -->
-     	 <dependency>
-        	 <groupId>org.springframework</groupId>
-        	 <artifactId>spring-jdbc</artifactId>
-         	<version>${org.springframework-version}</version>
-      	</dependency>
-		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
 		<!-- jstl -->
 
 		<dependency>
@@ -80,18 +88,37 @@
 		</dependency>
 
 		<!-- mybatis -->
-	  <dependency> 
-         <groupId>org.mybatis</groupId> 
-         <artifactId>mybatis</artifactId> 
-         <version>3.2.2</version> 
-      </dependency>
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.2.2</version>
+		</dependency>
 
-      <dependency> 
-         <groupId>org.mybatis</groupId> 
-         <artifactId>mybatis-spring</artifactId> 
-         <version>1.2.0</version> 
-      </dependency>
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.2.0</version>
+		</dependency>
 
+		<!-- common fileupload -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
+		
+		<!-- jackson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		
 		<!-- Logback --> <!-- 얘를 커몬 로깅으로 인식해야함 -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

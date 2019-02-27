@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>mysite</title>
+	<title>${siteTitle }</title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" href="${pageContext.request.contextPath }/assets/css/guestbook-ajax.css" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -62,11 +62,10 @@
 			}
 			
 			$.ajax({
-				url: "/mysite2/api/guestbook",
+				url: "/mysite3/guestbook/api/insert",
 				type: "POST",
 				dataType: "json",
-				data: "a=ajax-insert" +
-					  "&name=" + name +
+				data: "name=" + name +
 					  "&password=" + password +
 					  "&message=" + message,
 				
@@ -117,6 +116,9 @@
 				$("#list-guestbook").append(htmls);			
 			}
 			
+			$("#input-name").val('');
+			$('#input-password').val('');
+			$('#tx-content').val('');
 		};
 		
 		
@@ -129,7 +131,7 @@
 			
 			++page;
 			$.ajax({
-				url: "/mysite2/api/guestbook?a=ajax-list&p=" + page,
+				url: "/mysite3/guestbook/api/list/" + page,
 				type: "get",
 				dataType: "json",
 				data: "",
@@ -174,19 +176,18 @@
 						console.log($("#dialog-delete-form input[type='hidden']").val());
 						
 						$.ajax({ // 지워졌다는 결과를 보기위해  결과를 보고 ok하고 오면 close 비밀번호 틀리면 다시입력하게끔 해줘야함
-							url: "/mysite2/api/guestbook?a=ajax-delete&no=" + $("#hidden-no").val() + 
-									"&password=" + $("#password-delete").val(),
+							url: "/mysite3/guestbook/api/delete/" + $("#hidden-no").val() + "/" + $("#password-delete").val(),
 							type: "get",
 							dataType: "json",
 							data: "",
 							success: function(response) {
 								console.log(response);
-							
+								console.log(response.data);
 								
-								if( response.result != - 1)
+								if( response.data != -1)
 								{
 									console.log("삭제되었음!!");
-									$("#list-guestbook li[data-no='" + response.result +"']").remove();
+									$("#list-guestbook li[data-no='" + response.data +"']").remove();
 									$("#dialog-delete-form input[type='password']").val('');
 									dialogDelete.dialog("close");
 								}

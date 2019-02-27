@@ -1,4 +1,4 @@
-package com.douzone.mysite.service;
+package com.douzone.mysite.service.api;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.douzone.mysite.repository.GuestBookDao;
 import com.douzone.mysite.vo.GuestBookVo;
 
-@Service
+@Service("GuestbookApiService")
 public class GuestbookService {
 
 	@Autowired
@@ -28,8 +28,30 @@ public class GuestbookService {
 		return gDao.insert(gVo);
 	}
 	
-	public void delete(GuestBookVo gVo)
+	public int delete(GuestBookVo gVo)
 	{
-		gDao.delete(gVo);
+		return gDao.delete(gVo);
+	}
+	
+	public GuestBookVo ajaxSelect(long no)
+	{
+		return gDao.getSelect(no);
+	}
+	
+	public List<GuestBookVo> getTimelineSelect(String page)
+	{
+		if( "".equals(page))
+		{
+			page = "1";
+		}
+		
+		if (page.matches("\\d*") == false)
+		{
+			page = "1";
+		}
+		
+		long sPage = Long.parseLong(page);
+		
+		return gDao.getTimelineSelect( (sPage - 1) * 5);
 	}
 }

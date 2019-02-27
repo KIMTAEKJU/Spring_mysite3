@@ -186,103 +186,12 @@ public class BoardDao
 	
 	public List<BoardVo> get(String kwd, int startPage, int listCount)
 	{
-		BoardVo result = null;
+		Map<String, Object> map = new HashMap<>();
+		map.put("kwd", kwd);
+		map.put("startPage", startPage - 1);
+		map.put("listCount", listCount);
 		
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		List<BoardVo> list = new ArrayList<>();
-		
-		try 
-		{
-			 conn = getConnection();
-			 System.out.println(kwd);
-			 String sql = "SELECT \r\n" + 
-			 		"    a.title,\r\n" + 
-			 		"    b.name,\r\n" + 
-			 		"    a.hit,\r\n" + 
-			 		"    a.write_date,\r\n" + 
-			 		"    a.depth,\r\n" + 
-			 		"    a.contents,\r\n" + 
-			 		"    a.no,\r\n" + 
-			 		"    a.user_no,\r\n" + 
-			 		"    a.o_no,\r\n" + 
-			 		"    (SELECT \r\n" + 
-			 		"    COUNT(*) '댓글수'\r\n" + 
-			 		"FROM\r\n" + 
-			 		"    comment c,\r\n" + 
-			 		"    board d\r\n" + 
-			 		"WHERE\r\n" + 
-			 		"    c.board_no = d.no AND d.no = a.no) '댓글수'\r\n" + 
-			 		"FROM\r\n" + 
-			 		"    board a,\r\n" + 
-			 		"    user b\r\n" + 
-			 		"WHERE\r\n" + 
-			 		"    a.user_no = b.no\r\n" + 
-			 		"        AND (a.title LIKE '%" + kwd + "%'\r\n" + 
-			 		"        OR a.contents LIKE '%" + kwd + "%'\r\n" + 
-			 		"        OR b.name LIKE '%" + kwd + "%')\r\n" + 
-			 		"GROUP BY a.no\r\n" + 
-			 		"ORDER BY a.g_no DESC , a.o_no ASC\r\n" + 
-			 		"limit ?, ?";
-			 
-			 pstmt = conn.prepareCall(sql);
-			 pstmt.setInt(1, startPage-1);
-			 pstmt.setInt(2, listCount);
-			 
-			 rs = pstmt.executeQuery();
-			 
-			 while (rs.next())
-			 {
-				 String title = rs.getString(1);
-				 String name = rs.getString(2);
-				 long hit = rs.getLong(3);
-				 String write_Date = rs.getString(4);
-				 long depth = rs.getLong(5);
-				 String contents = rs.getString(6);
-				 long no = rs.getLong(7);
-				 long userNo = rs.getLong(8);
-				 long oNo = rs.getLong(9);
-				 long commentCount = rs.getLong(10);
-				 
-				 result = new BoardVo();
-				 result.setTitle(title);
-				 result.setName(name);
-				 result.setHit(hit);
-				 result.setWrite_Date(write_Date);
-				 result.setDepth(depth);
-				 result.setContents(contents);
-				 result.setNo(no);
-				 result.setUserNo(userNo);
-				 result.setoNo(oNo);
-				 result.setCommentCount(commentCount);
-				 
-				 list.add(result);
-			 }
-		} 
-		catch (SQLException e) 
-		{
-			System.out.println("리스트 error : " + e);
-		}
-		finally 
-		{
-			try 
-			{
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
-			} 
-			catch (SQLException e) 
-			{
-				e.printStackTrace();
-			}
-		}
-		
-		return list;
+		return sqlSession.selectList("board.getList", map);
 	}
 	
 	public List<BoardVo> getTotalCount(String kwd)

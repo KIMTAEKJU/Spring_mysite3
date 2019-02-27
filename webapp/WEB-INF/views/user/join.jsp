@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>mysite</title>
+	<title>${siteTitle }</title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<link href="${pageContext.servletContext.contextPath }/assets/css/user.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="${pageContext.servletContext.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
@@ -32,13 +32,12 @@
 					return false;
 				}
 				
-				/*
 				// 2-2. 이메일 중복체크 유무
 				if( !$("#img-checkemail").is(":visible"))
 				{
 					alert("이메일 중복 체크를 해야 합니다.");
 					return false;
-				}*/
+				}
 				
 				// 3. 비밀번호 확인
 				if( $("input[type='password']").val() == ""){
@@ -71,13 +70,19 @@
 				}
 				
 				$.ajax({
-					url: "${pageContext.servletContext.contextPath }/api/user",
-					type: "post",
+					url: "${pageContext.servletContext.contextPath }/user/api/checkemail?email=" + email,
+					type: "GET",
 					datatype: "json",
-					data: "a=ajax-checkemail&email=" + email,
+					data: "",
 					
 					success: function (response) {
-						if( response.exist == true)
+						console.log(response);
+						if( response.result == "fail")
+						{
+							console.error(response.message);
+							return;
+						}
+						if( response.data == true)
 						{
 							alert("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요");
 							$("#email")

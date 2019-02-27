@@ -28,4 +28,16 @@
 			delete from guestbook where no = #{no} and password = #{password}
 		]]>
 	</delete>
+	
+	<select id="getSelect" parameterType="long" resultType="guestbookvo">
+		<![CDATA[
+			select no, name, date_format(reg_date, '%Y-%m-%d %h:%i:%s'), message from guestbook where no = #{no}
+		]]>
+	</select>
+	
+	<select id="getTimelineSelect" parameterType="long" resultType="guestbookvo">
+		<![CDATA[
+			select no, name, date_format(reg_date, '%Y-%m-%d %h:%i:%s'), message from guestbook order by reg_date desc limit #{page}, 5
+		]]>
+	</select>
 </mapper> 

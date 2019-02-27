@@ -98,54 +98,9 @@ public class CommentDao
 		return sqlSession.selectList("comment.getCommentList", no);
 	}
 	
-	public boolean insertReplyComment(CommentVo vo)
+	public int insertReplyComment(CommentVo vo)
 	{
-		boolean result = false;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		
-		try 
-		{
-			 conn = getConnection();
-			 //(select ifnull(max(g_no)+1,1) from comment a)
-			 String sql = "insert into comment values(null, ?, now(), ?, ?, ?, ?, ?, ?, ?)";
-			 
-			 pstmt = conn.prepareCall(sql);
-			 
-			 System.out.println("vo.getoNo : " + vo.getoNo());
-			 
-			 pstmt.setString(1, vo.getContents());
-			 pstmt.setLong(2, vo.getBoardNo());
-			 pstmt.setString(3, vo.getUserNo());
-			 pstmt.setString(4, vo.getName());
-			 pstmt.setString(5, vo.getPassword());
-			 pstmt.setLong(6, vo.getgNo());
-			 pstmt.setLong(7, vo.getoNo());
-			 pstmt.setLong(8, vo.getDepth());
-			 
-			 int count = pstmt.executeUpdate();
-			 result = count == 1;
-		} 
-		catch (SQLException e) 
-		{
-			System.out.println("error : " + e);
-		}
-		finally 
-		{
-			try 
-			{
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
-			} 
-			catch (SQLException e) 
-			{
-				e.printStackTrace();
-			}
-		}
-		
-		return result;
+		return sqlSession.insert("comment.insertReplyComment", vo);
 	}
 	
 	public int insert(CommentVo vo)

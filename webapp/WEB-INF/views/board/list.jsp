@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>mysite</title>
+<title>${siteTitle }</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link href="${pageContext.servletContext.contextPath }/assets/css/board.css" rel="stylesheet" type="text/css">
 </head>
@@ -44,12 +44,12 @@
 										<img src="/mysite2/assets/images/reply.png"/>
 									</c:if>
 								
-								<a href="${pageContext.servletContext.contextPath }/board/view?boardNo=${vo.no}&page=${BoardPagingFrameWorkVo.page}&kwd=${kwd}">${vo.title} <span style="color: red;">(${vo.commentCount})</span></a></td>
+								<a href="${pageContext.servletContext.contextPath }/board/view?no=${vo.no}&page=${BoardPagingFrameWorkVo.page}&kwd=${kwd}">${vo.title} <span style="color: red;">(${vo.commentCount})</span></a></td>
 								
 								<td>${vo.name}</td>
 								<td>${vo.hit}</td>
 								<td>${vo.write_Date}</td>
-								<td><a href="${pageContext.servletContext.contextPath }/board/delete?no=${vo.no }&page=${BoardPagingFrameWorkVo.page}&kwd=${param.kwd}" class="del"><img src="/mysite3/assets/images/recycle.png"></a></img></td>
+								<td><a href="${pageContext.servletContext.contextPath }/board/delete?no=${vo.no }&page=${BoardPagingFrameWorkVo.page}&kwd=${param.kwd}" class="del"></td>
 							</tr>
 					</c:forEach>
 				</table>

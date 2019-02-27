@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StopWatch;
 
 import com.douzone.mysite.exception.UserDaoException;
 import com.douzone.mysite.vo.GuestBookVo;
@@ -19,10 +20,7 @@ import com.douzone.mysite.vo.UserVo;
 
 @Repository
 public class UserDao 
-{
-	@Autowired
-	private DataSource dataSource;
-	
+{	
 	@Autowired
 	private SqlSession sqlSession;
 	
@@ -54,6 +52,8 @@ public class UserDao
 		
 		System.out.println("email : " + email);
 		System.out.println("password : " + password);
-		return sqlSession.selectOne("user.getByEmailAndPassword", map); // 여기서 2개가나오면 에러가남
+		UserVo userVo = sqlSession.selectOne("user.getByEmailAndPassword", map); // 여기서 2개가나오면 에러가남
+		
+		return userVo;
 	}
 }	

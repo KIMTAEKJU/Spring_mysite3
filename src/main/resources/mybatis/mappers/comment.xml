@@ -73,6 +73,12 @@
 			update comment set o_no = o_no + 1 where g_no = #{gNo} and o_no >= #{oNo}
 		]]>
 	</update>
+	
+	<insert id="insertReplyComment" parameterType="commentvo">
+		<![CDATA[
+			insert into comment values(null, #{contents}, now(), #{boardNo}, #{userNo}, #{name}, #{password}, #{gNo}, #{oNo}, #{depth})
+		]]>
+	</insert>
 
 
 </mapper> 

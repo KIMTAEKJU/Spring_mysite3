@@ -21,7 +21,6 @@ public class SiteService
 	
 	public List<SiteVo> getSite()
 	{
-		
 		return siteDao.getSite();
 	}
 }
