@@ -11,7 +11,7 @@
 	
 	<select id="getGalleryList" resultType="galleryvo">
 		<![CDATA[
-			select no, comment, image_url as imageUrl from gallery
+			select no, comment, image_url as imageUrl from gallery order by no desc
 		]]>
 	</select>
 	

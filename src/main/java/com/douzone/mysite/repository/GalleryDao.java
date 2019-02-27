@@ -16,7 +16,6 @@ public class GalleryDao
 	
 	public int insert(GalleryVo galleryVo)
 	{
-		System.out.println("여기까지???");
 		System.out.println("galleryVo comment : " + galleryVo.getComment());
 		System.out.println("galleryVo url : " + galleryVo.getImageUrl());
 
