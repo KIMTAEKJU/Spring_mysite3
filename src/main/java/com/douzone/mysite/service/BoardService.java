@@ -18,6 +18,7 @@ import com.douzone.mysite.vo.BoardPagingFrameWorkVo;
 import com.douzone.mysite.vo.BoardVo;
 import com.douzone.mysite.vo.CommentVo;
 import com.douzone.mysite.vo.UserVo;
+import com.douzone.security.AuthUser;
 
 @Service
 public class BoardService 
@@ -36,23 +37,23 @@ public class BoardService
 	public Map<String, Object> list(Integer paramPage, String paramKwd)
 	{
 		String kwd = paramKwd;
-//
-//		if( kwd == null)
-//		{
-//			kwd = kwdAttr;
-//		}
-//		else
-//		{
-//			kwdAttr = kwd;
-//		}
-		
+		//
+		//		if( kwd == null)
+		//		{
+		//			kwd = kwdAttr;
+		//		}
+		//		else
+		//		{
+		//			kwdAttr = kwd;
+		//		}
+
 		//if( paramPage == null)
-			//paramPage = 1;
+		//paramPage = 1;
 
 		kwd = kwd.replaceAll(" ", "");
 
 		long totalCount = bpfd.getTotalCount(kwd);
-		
+
 		if( totalCount == 0)
 			totalCount = 1;
 		// 화면에 보여줄 게시물수
@@ -62,7 +63,7 @@ public class BoardService
 		long totalPage = (totalCount % listCount > 0) ?   
 				(totalCount / listCount) + 1 : 
 					totalCount / listCount;
-		
+
 		// 화면에 보여줄 페이지수
 		int pageCount = 5; 
 
@@ -81,7 +82,7 @@ public class BoardService
 
 		// 마지막 페이지
 		int endPage = startPage + pageCount - 1;
-		
+
 		System.out.println("totalCount : " + totalCount);
 		System.out.println("listCount : " + listCount);
 		System.out.println("totalPage : " + totalPage);
@@ -89,7 +90,7 @@ public class BoardService
 		System.out.println("page : " + page);
 		System.out.println("startPage : " + startPage);
 		System.out.println("endPage : " + endPage);
-		
+
 		List<BoardVo> list = bDao.get(kwd, ((page - 1) * listCount) + 1, listCount);
 
 		BoardPagingFrameWorkVo result = new BoardPagingFrameWorkVo();
@@ -101,10 +102,10 @@ public class BoardService
 		result.setPage(page);
 		result.setStartPage(startPage);
 		result.setEndPage(endPage);
-		
+
 		for (int i = 0; i < list.size(); i++)
 			System.out.println(list.get(i).getoNo());
-		
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("list", list);
 		map.put("BoardPagingFrameWorkVo", result);
@@ -115,6 +116,8 @@ public class BoardService
 
 	public Map<String, Object> view(long no)
 	{
+		bDao.update(no); // 조회수 증가
+
 		Map<String, Object> map = new HashMap<>();
 
 		List<BoardVo> list = bDao.get(no);
@@ -139,22 +142,20 @@ public class BoardService
 		System.out.println("삭제 : " + bDao.delete(bVo));
 	}
 
-	public void commentWrite(CommentVo cVo, UserVo uVo)
+	public void commentWrite(CommentVo cVo, UserVo userVo)
 	{
 		String password = null;
-		
-		if( uVo != null)
+
+		if( userVo != null)
 		{
-			password = getPassword(uVo.getNo());
+			password = getPassword(userVo.getNo());
 			System.out.println("password : " + password);
 			cVo.setPassword(password);
 		}
 		
-		cVo.setPassword(cVo.getPassword());
-
 		if( cVo.getUserNo().equals(""))
 			cVo.setUserNo(null);
-		
+
 		System.out.println("%$#%@^#@^ cVo name : " + cVo.getName());
 		cDao.insert(cVo);
 	}
@@ -165,7 +166,7 @@ public class BoardService
 			cVo.setUserNo(null);
 		else
 			cVo.setUserNo( String.valueOf(uVo.getNo()));
-		
+
 		cDao.update(cVo);
 	}
 
@@ -174,23 +175,37 @@ public class BoardService
 		cDao.delete(cVo);
 	}
 
-	public void commentReply(CommentVo cVo)
+	public void commentReply(CommentVo cVo, UserVo userVo)
 	{
+		String password = null;
+
+		if( userVo != null)
+		{
+			password = getPassword(userVo.getNo());
+			System.out.println("password : " + password);
+			cVo.setPassword(password);
+		}
+		else
+		{
+			cVo.setUserNo(null);
+		}
+
 		List<CommentVo> list = cDao.get(String.valueOf(cVo.getCommentNo()));
+
 
 		System.out.println("list size: " + list.size());
 
 		long gNo = list.get(0).getgNo(); // g_no
 		long oNo = list.get(0).getoNo(); // o_no
 		long depth = list.get(0).getDepth(); // depth
-		
+
 		CommentVo vo = new CommentVo();
 		vo.setgNo(gNo);
 		vo.setoNo(oNo);
 		vo.setDepth(depth);
-		
+
 		String check = cDao.check(vo);
-		
+
 		if (check == null) // 맨밑으로 댓글
 		{
 			oNo = cDao.getMaxONO(gNo).get(0).getoNo(); // 가장 큰 oNo를 받아서 저장
@@ -210,15 +225,15 @@ public class BoardService
 		cDao.insertReplyComment(cVo);
 	}
 
-	public void modify(BoardVo bVo, HttpSession session)
+	public void modify(BoardVo bVo, UserVo userVo)
 	{
-		bDao.update(bVo, ((UserVo)session.getAttribute("authuser")).getNo());
+		bDao.update(bVo, userVo.getNo());
 	}
 
-	public String reply(BoardVo bVo, HttpSession session)
+	public String reply(BoardVo bVo, UserVo userVo)
 	{		
 		List<BoardVo> list = bDao.get(String.valueOf(bVo.getNo()));
-		
+
 		long gNo = list.get(0).getgNo();
 		long oNo = list.get(0).getoNo() + 1; // oNo + 1
 		long depth = list.get(0).getDepth() + 1; // depth + 1
@@ -226,13 +241,13 @@ public class BoardService
 		bVo.setgNo(gNo);
 		bVo.setoNo(oNo);
 		bVo.setDepth(depth);
-		bVo.setUserNo( ((UserVo)session.getAttribute("authuser")).getNo() ); 
+		bVo.setUserNo( userVo.getNo() ); 
 
 		bDao.update(bVo);
 		bDao.insert(bVo);
 		return bDao.getMaxBoardNo();
 	}
-	
+
 	public String getPassword(long userNo)
 	{
 		return uDao.getPassword(userNo);		

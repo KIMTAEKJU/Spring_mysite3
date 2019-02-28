@@ -5,6 +5,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %> <!-- 메세지 form 태그 spring message보다 편함 -->​​
+
 
 <!DOCTYPE html>
 <html>
@@ -18,32 +20,45 @@
 		<c:import url="/WEB-INF/views/includes/header.jsp"/>
 		<div id="content">
 			<div id="board">
-				<form class="board-form" method="POST" action="${pageContext.servletContext.contextPath }/board/commentModify?commentNo=${commentNo}&boardNo=${boardNo}&page=${param.page}&kwd=${param.kwd}">
-					
-					
+				<form:form modelAttribute="commentVo" class="board-form" method="POST" action="${pageContext.servletContext.contextPath }/board/commentModify?commentNo=${param.commentNo}&boardNo=${param.boardNo}&page=${param.page}&kwd=${param.kwd}">
+					<input type="hidden" name="name" value="null"/>
 					<table class="tbl-ex">
 						<tr>
 							<th colspan="2">댓글수정</th>
 						</tr>
 						<tr>
-							<c:if test="${session == null }">
-								<td class="label">비밀번호</td>
-								<td><input type="text" name="password" value=""></td>
-							</c:if>
+							<c:choose>
+								<c:when test="${session == null }">
+									<td class="label">비밀번호</td>
+									<td>
+										<form:input path="password"/>
+										<p style = "color: red; padding: 0; margin: 0; text-align: left">
+											<form:errors path="password"/>
+										</p>
+									</td>
+								</c:when>
+								
+								<c:otherwise>
+									<input type="hidden" name="password" value="null"/>
+								</c:otherwise>
+							</c:choose>
+							
 						</tr>
 						<tr>
 							<td class="label">내용</td>
 							<td>
-								<textarea id="content" name="contents">
-								</textarea>
+								<form:textarea path="contents" id="content"/>
+								<p style = "color: red; padding: 0; margin: 0; text-align: left">
+									<form:errors path="contents"/>
+								</p>
 							</td>
 						</tr>
 					</table>
 					<div class="bottom">
-						<a href="${pageContext.servletContext.contextPath }/board/view?boardNo=${boardNo}&page=${param.page}&kwd=${param.kwd}">취소</a>
+						<a href="${pageContext.servletContext.contextPath }/board/view?boardNo=${param.boardNo}&page=${param.page}&kwd=${param.kwd}">취소</a>
 						<input type="submit" value="수정">
 					</div>
-				</form>				
+				</form:form>				
 			</div>
 		</div>
 		<c:import url="/WEB-INF/views/includes/navigation.jsp">

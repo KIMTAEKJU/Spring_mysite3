@@ -6,6 +6,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %> <!-- 메세지 form 태그 spring message보다 편함 -->​​
+
 
 <!DOCTYPE html>
 <html>
@@ -21,7 +23,7 @@
 		<div id="content">
 			<div id="board" class="board-form">
 			
-				<form class="board-form" method="post" action="${pageContext.servletContext.contextPath }/board/commentReply/${commentNo }/${boardNo }">
+				<form:form modelAttribute="commentVo" class="board-form" method="post" action="${pageContext.servletContext.contextPath }/board/commentReply?commentNo=${param.commentNo }&boardNo=${param.boardNo }&userNo=${session.no}&page=${param.page}&kwd=${param.kwd}">
 					
 					<table class="tbl-ex">
 						<tr>
@@ -31,30 +33,51 @@
 							<td class="label">닉네임</td>
 							<c:choose>
 								<c:when test="${session == null }">
-									<td><input type="text" name="name" value="" ></td>
+									<td>
+										<form:input path="name"/>
+										<p style = "color: red; padding: 0; margin: 0; text-align: left">
+											<form:errors path="name"/>
+										</p>
+									</td>
 								</c:when>
 								
 								<c:otherwise>
-									<td>${session.name }</td>
+									<td><form:input path="name" value="${session.name }" readonly="true"/></td>
 								</c:otherwise>
 							</c:choose>
 							
-							<c:if test="${session == null }">
-								<td class="label">비밀번호</td>
-								<td><input type="text" name="password" value=""></td>
-							</c:if>	
+							<c:choose>
+								<c:when test="${session == null }">
+									<td class="label">비밀번호</td>
+									<td>
+										<form:input path="password"/>
+										<p style = "color: red; padding: 0; margin: 0; text-align: left">
+											<form:errors path="password"/>
+										</p>
+									</td>
+								</c:when>
+								
+								<c:otherwise>
+									<input type="hidden" name="password" value="null"/>
+								</c:otherwise>
+							</c:choose>
+							
+							
 						</tr>
 						<tr>
 							<td class="label">내용</td>
 							<td>
-								<textarea id="content" name="contents"></textarea>
+								<form:textarea path="contents" id="content"/>
+								<p style = "color: red; padding: 0; margin: 0; text-align: left">
+									<form:errors path="contents"/>
+								</p>
 							</td>
 						</tr>
 					</table>
 					<div class="bottom">
 						<input type="submit" value="등록">
 					</div>
-				</form>	
+				</form:form>	
 			</div>
 		</div>
 		<c:import url="/WEB-INF/views/includes/navigation.jsp">

@@ -107,25 +107,4 @@ public class CommentDao
 	{
 		return sqlSession.insert("comment.insertComment", vo);
 	}
-	
-	private static Connection getConnection() throws SQLException
-	{
-		Connection conn = null;
-		
-		try 
-		{
-			// 1. JDBC Driver(MySQL) 로딩
-			Class.forName("com.mysql.jdbc.Driver"); // 제대로 로딩됐는지 확인
-			
-			// 2. 연결하기 (Connection 객체 얻어오기)
-			String url = "jdbc:mysql://localhost:3306/webdb";
-			conn = DriverManager.getConnection(url, "webdb", "webdb");
-		} 
-		catch (ClassNotFoundException e) 
-		{
-			System.out.println("드라이버 로딩 실패 : " + e);
-		}
-		
-		return conn;
-	}
 }

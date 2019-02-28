@@ -1,10 +1,24 @@
 package com.douzone.mysite.vo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class UserVo 
 {
 	private Long no;
+	
+	@NotEmpty
+	@Length(min = 2, max = 8)
 	private String name;
+	
+	@NotEmpty
+	@Email // 정규표현식같은걸로 이메일 형식을 체크
 	private String email;
+	
 	private String password;
 	private String gender;
 	private String joinDate;

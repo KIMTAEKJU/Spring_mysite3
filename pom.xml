@@ -61,16 +61,24 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 
-		<!-- jstl -->
+		<!-- validation -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.0.0.GA</version>
+		</dependency>
 
 		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.2.0.Final</version>
+		</dependency>
 
+		<!-- jstl -->
+		<dependency>
 			<groupId>javax.servlet</groupId>
-
 			<artifactId>jstl</artifactId>
-
 			<version>1.2</version>
-
 		</dependency>
 
 		<!-- common dbcp -->
@@ -111,14 +119,14 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.4</version>
 		</dependency>
-		
+
 		<!-- jackson -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.1.1</version>
 		</dependency>
-		
+
 		<!-- Logback --> <!-- 얘를 커몬 로깅으로 인식해야함 -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -131,6 +139,19 @@
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
 		</dependency>
+		
+		<!-- Spring Security -->
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>3.2.3.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>3.2.3.RELEASE</version>
+        </dependency>	  
 
 	</dependencies>
 

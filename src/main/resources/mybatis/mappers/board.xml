@@ -103,7 +103,7 @@
 					    comment c,
 					    board d
 					WHERE
-					    c.board_no = d.no AND d.no = a.no) '댓글수'
+					    c.board_no = d.no AND d.no = a.no) as commentCount
 					FROM
 					    board a,
 					    user b
@@ -118,5 +118,11 @@
 		]]>
 
 	</select>
+	
+	<update id="updateViews" parameterType="long">
+		<![CDATA[
+			update board set hit = hit + 1 where no = #{no}
+		]]>
+	</update>
 
 </mapper> 

@@ -27,7 +27,7 @@
 					</list>
 				</property>
 			</bean>
-			
+
 			<!-- json 메세지 컨버터 -->
 			<bean
 				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
@@ -46,9 +46,9 @@
 				class="com.douzone.security.AuthUserHandlerMethodArgumentResolver"></bean>
 		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
-	
+
 	<!-- the mvc resources mapping url(virtual) -->
-	<mvc:resources mapping="/uploads/images/**" location="file:/duzon/uploads/"/>
+	<mvc:resources mapping="/uploads/images/**" location="file:/duzon/uploads/" />
 
 	<!-- 서블릿 컨테이너의 디폴트 서블릿 위임 핸들러 -->
 	<mvc:default-servlet-handler />
@@ -61,12 +61,12 @@
 			</mvc:interceptor> -->
 
 		<mvc:interceptor>
-			<mvc:mapping path="/user/auth" /> <!-- 게스트북으로가는 모든놈은 이제 인터셉터에 걸림 -->
+			<mvc:mapping path="/user/auth" /> <!-- 로그인처리  -->
 			<bean class="com.douzone.security.AuthLoginInterceptor" />
 		</mvc:interceptor>
 
 		<mvc:interceptor>
-			<mvc:mapping path="/user/logout" />
+			<mvc:mapping path="/user/logout" /> <!-- 로그아웃 처리 -->
 			<bean class="com.douzone.security.AuthLogoutInterceptor" />
 		</mvc:interceptor>
 
@@ -79,18 +79,18 @@
 		</mvc:interceptor>
 
 	</mvc:interceptors>
-	
+
 	<!-- 멀티파트 리졸버 -->
-	<bean id="multipartResolver" 
+	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- 최대업로드 가능한 바이트크기 -->
 		<property name="maxUploadSize" value="52428800" /> <!-- 파일업로드 크기의 한계를 넘으면 저장을 안시킴 null or 에러 -->
 		<!-- 디스크에 임시 파일을 생성하기 전에 메모리에 보관할수있는 최대 바이트 크기 -->
-		<!-- property name="maxInMemorySize" value="52428800" /-->
+		<!-- property name="maxInMemorySize" value="52428800" / -->
 		<!-- defaultEncoding --> <!-- 엔코딩 되서 넘어오는애가 아니고 필터도 거쳐오지만 멀티파트면 엔코딩해주지않아서 설정해둠 -->
 		<property name="defaultEncoding" value="utf-8" />
-	</bean>	
-	
+	</bean>
+
 	<!--본 뷰(이름) 리졸버 설정 -->
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -100,7 +100,18 @@
 		<property name="suffix" value=".jsp" />
 		<property name="order" value="1" />
 	</bean>
-	
+
+	<!-- MessageSource -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+
+		<property name="basenames">
+			<list>
+				<value>messages/messages_ko</value>
+			</list>
+		</property>
+
+	</bean>
+
 
 	<context:annotation-config /> <!-- @Controller를 찾겠다 -->
 	<!-- 어노테이션붙은애들 스캔 -->

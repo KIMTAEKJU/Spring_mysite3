@@ -25,7 +25,7 @@
 		]]>
 		
 		<choose>
-			<when test="password == null">
+			<when test="userNo != null">
 				user_no = #{userNo}
 			</when>
 			
@@ -37,17 +37,9 @@
 	
 	<delete id="deleteComment" parameterType="commentvo">
 		<![CDATA[
-			delete from comment where no = #{commentNo} and
+			delete from comment where no = #{commentNo} and password = #{password}
 		]]>
-		<choose>
-			<when test="password == null">
-				user_no = ${userNo};
-			</when>
-			
-			<otherwise>
-				password = #{password}
-			</otherwise>
-		</choose>
+		
 	</delete>
 	
 	<select id="replyCommentInfo" parameterType="string" resultType="commentvo">

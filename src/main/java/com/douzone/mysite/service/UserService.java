@@ -1,7 +1,13 @@
 package com.douzone.mysite.service;
 
+import javax.validation.Valid;
+
+import org.apache.ibatis.executor.ReuseExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -20,6 +26,18 @@ public class UserService
 		userDao.insert(userVo);
 		
 		// 2. email 주소 확인하는 메일 보내기
+	}
+	
+	@RequestMapping("asdsa")
+	public String formValidationCheck(@Valid UserVo userVo, BindingResult result, Model model)
+	{
+		if( result.hasErrors())
+		{
+			model.addAllAttributes(result.getModel());
+			return "/user/login";
+		}
+		
+		return null;
 	}
 	
 	public UserVo login(UserVo userVo)

@@ -1,11 +1,21 @@
 package com.douzone.mysite.vo;
 
+import javax.validation.constraints.AssertTrue;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class CommentVo 
 {
 	private long no;
+	@NotEmpty
 	private String name;
+	
+	@NotEmpty
 	private String password;
+	
+	@NotEmpty
 	private String contents;
+	
 	private long boardNo;
 	private String userNo;
 	private String writeDate;

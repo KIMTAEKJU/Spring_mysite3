@@ -99,13 +99,15 @@
 			// 현업에 가면 이렇게안한다 -> template
 			// ex) ejs, underscore, mustache
 			
+			
 			var htmls = 
 				"<li data-no='" + vo.no + "'>" +
 					"<strong>" + vo.name + "</strong>" +
 					"<p>" + vo.message.replace(/\n/g, "<br>") + "</p>" +
 					"<strong></strong>" +
 					"<a href='' data-no='" + vo.no + "'>삭제</a>" + 
-				"</li>";
+				"</li>"; 
+			/*var htmls =*/ 
 			
 			if( mode == true)
 			{

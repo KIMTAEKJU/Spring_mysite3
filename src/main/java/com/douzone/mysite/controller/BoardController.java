@@ -7,11 +7,13 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,7 @@ import com.douzone.mysite.vo.CommentVo;
 import com.douzone.mysite.vo.UserVo;
 import com.douzone.security.Auth;
 import com.douzone.security.Auth.Role;
+import com.douzone.security.AuthUser;
 
 @Controller
 @RequestMapping("/board")
@@ -37,7 +40,7 @@ public class BoardController
 	public String list(@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
 					   @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 					   Model model, 
-					   HttpSession session)
+					   @AuthUser UserVo userVo)
 	{
 		System.out.println("page : " + page);
 		System.out.println("kwd : " + kwd);
@@ -46,26 +49,27 @@ public class BoardController
 		model.addAttribute("list", map.get("list"));
 		model.addAttribute("BoardPagingFrameWorkVo", map.get("BoardPagingFrameWorkVo"));
 		model.addAttribute("kwd", map.get("kwd"));
-		model.addAttribute("session", session.getAttribute("authuser"));
+		model.addAttribute("session", userVo);
 		return "board/list";
 	}
 	
-	@RequestMapping("/view")
-	public String view(@ModelAttribute BoardVo bVo, 
-					   Model model, 
-					   HttpSession session)
+	@RequestMapping(value = "/view")
+	public String view(@AuthUser UserVo userVo,
+					   @ModelAttribute CommentVo commentVo,
+					   Model model)
 	{
-		Map<String, Object> map = boardService.view(bVo.getNo());
-		
+		Map<String, Object> map = boardService.view(commentVo.getBoardNo());
+
 		model.addAttribute("list", map.get("list"));
 		model.addAttribute("listComment", map.get("listComment"));
-		model.addAttribute("session", session.getAttribute("authuser"));
+		model.addAttribute("session", userVo);
 		return "board/view";
 	}
 	
 	@Auth
 	@RequestMapping(value = "/write", method = RequestMethod.GET)
-	public String write(Model model)
+	public String write(Model model,
+						@ModelAttribute BoardVo bVo)
 	{
 		return "/board/write";
 	}
@@ -73,190 +77,212 @@ public class BoardController
 	@Transactional
 	@Auth
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
-	public String write(@ModelAttribute BoardVo bVo, 
+	public String write(@AuthUser UserVo userVo,
 						@RequestParam(value = "page", required = false) String page,
 						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-						HttpSession session)
+						@ModelAttribute @Valid BoardVo bVo, 
+						BindingResult result,
+						Model model)
 	{
+		if( result.hasErrors())
+		{
+			model.addAllAttributes(result.getModel());
+			return "/board/write";
+		}
 		//System.out.println("!@#@!# kwd : " + kwd);
 		return "redirect:/board/view?boardNo=" + 
-				boardService.write(bVo, (UserVo)session.getAttribute("authuser")) + 
+				boardService.write(bVo, userVo) + 
 				"&page=" + page + 
 				"&kwd=" + kwd;
 	}
 	
 	@Auth
 	@RequestMapping("/delete")
-	public String delete(HttpSession session, 
+	public String delete(@AuthUser UserVo userVo, 
 						 @RequestParam(value = "page", required = false) String page,
 						 @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 						 @ModelAttribute BoardVo bVo)
 	{
-		if( session.getAttribute("authuser") == null)
+		if( userVo == null)
 			return "redirect:/board";
-		boardService.delete(bVo, (UserVo)session.getAttribute("authuser"));
+		boardService.delete(bVo, userVo);
 		return "redirect:/board?&page=" + page + "&kwd=" + kwd;
 	}
 	
 	@RequestMapping({"/commentWrite"})
-	public String commentWrite(@ModelAttribute CommentVo cVo,
+	public String commentWrite(@AuthUser UserVo userVo,
+							   @ModelAttribute @Valid CommentVo commentVo,
+							   BindingResult result,
+							   Model model,
 			 				   @RequestParam(value = "page", required = false) String page,
-			 				   @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-			 				   HttpSession session)
+			 				   @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd)
 	{
 //		System.out.println("cVo contents : " + cVo.getContents());
 //		System.out.println("cVo boardNo : " + cVo.getBoardNo());
 //		System.out.println("cVo name : " + cVo.getName());
 //		System.out.println("cVo userNo : " + cVo.getUserNo());
 //		System.out.println("cVo password : " + cVo.getPassword());
+		
+		if( result.hasErrors())
+		{
+			model.addAllAttributes(result.getModel());
+			
+			Map<String, Object> map = boardService.view(commentVo.getBoardNo());
 
-		boardService.commentWrite(cVo, (UserVo)session.getAttribute("authuser"));
+			model.addAttribute("list", map.get("list"));
+			model.addAttribute("listComment", map.get("listComment"));
+			model.addAttribute("session", userVo);
+			return "board/view";
+		}
+		
+		boardService.commentWrite(commentVo, userVo);
 		//System.out.println("cVo boardNo : " + cVo.getBoardNo());
-		return "redirect:/board/view?boardNo=" + cVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
+		return "redirect:/board/view?boardNo=" + commentVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
 		//return "redirect:/board/view/"+cVo.getBoardNo();
 	}
 	
 	@RequestMapping(value = "/commentModify", method = RequestMethod.GET)
 	public String commentModify(Model model, 
 								@ModelAttribute CommentVo cVo,
-								@RequestParam(value = "page", required = false) String page,
-				 				@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-								HttpSession session)
+								@AuthUser UserVo userVo)
 	{
-		model.addAttribute("commentNo", cVo.getCommentNo());
-		model.addAttribute("boardNo", cVo.getBoardNo());
-		model.addAttribute("session", session.getAttribute("authuser"));
-		model.addAttribute("page", page);
-		model.addAttribute("kwd", kwd);
+		model.addAttribute("session", userVo);
 		return "/board/commentModify";
 	}
 	
 	@RequestMapping(value = "/commentModify", method = RequestMethod.POST)
-	public String commentModify(@ModelAttribute CommentVo cVo, 
+	public String commentModify(@AuthUser UserVo userVo,
+								@ModelAttribute @Valid CommentVo commentVo,
+								BindingResult result,
+								Model model,
 								@RequestParam(value = "page", required = false) String page,
-								@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-								HttpSession session)
+								@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd)
 	{	
-		boardService.commentModify(cVo, (UserVo)session.getAttribute("authuser"));
-		return "redirect:/board/view?boardNo=" + cVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
+		if( result.hasErrors())
+		{
+			System.out.println("여기~");
+			model.addAllAttributes(result.getModel());
+			model.addAttribute("session", userVo);
+			return "/board/commentModify";
+		}
+		
+		boardService.commentModify(commentVo, userVo);
+		return "redirect:/board/view?boardNo=" + commentVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
 	}
 	
 	@RequestMapping(value = "/commentDelete", method = RequestMethod.GET )
-	public String commentDelete(HttpSession session, 
-								@ModelAttribute CommentVo cVo, 
-								@RequestParam(value = "page", required = false) String page,
-								@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-								Model model)
+	public String commentDelete(@ModelAttribute CommentVo cVo)
 	{
-//		UserVo sessionVo = (UserVo)session.getAttribute("authuser");
-//		System.out.println("cVo password : " + cVo.getPassword());
-//		System.out.println("cVo contents : " + cVo.getContents());
-
-//		if( sessionVo == null || cVo.getPassword() != null)
-//		{	
-			model.addAttribute("commentNo", cVo.getCommentNo());
-			model.addAttribute("boardNo", cVo.getBoardNo());
-			model.addAttribute("page", page);
-			model.addAttribute("kwd", kwd);
-
-			return "board/commentDelete";
-		//}
-//		else
-//		{
-//			cVo.setUserNo(String.valueOf(sessionVo.getNo()));
-//			boardService.commentDelete(cVo);
-//			return "redirect:/board/view?boardNo=" + cVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
-//		}
+		return "board/commentDelete";
 	}
 	
 	@RequestMapping(value = "/commentDelete", method = RequestMethod.POST )
-	public String commentDelete(@ModelAttribute CommentVo cVo,
+	public String commentDelete(@AuthUser UserVo userVo,
+								@ModelAttribute @Valid CommentVo commentVo,
+								BindingResult result,
+								Model model,
 								@RequestParam(value = "page", required = false) String page,
-								@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-								HttpSession session)
+								@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd)
 	{	
-//		System.out.println("cVo : " + cVo.getBoardNo());
-//		System.out.println("cVo : " + cVo.getCommentNo());
-//		System.out.println("cVo password : " + cVo.getPassword());
-
-		boardService.commentDelete(cVo);
-		return "redirect:/board/view?boardNo=" + cVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
+		System.out.println("commetVo password : " + commentVo.getPassword());
+		
+		if( result.hasErrors() )
+		{
+			model.addAllAttributes(result.getModel());
+			return "/board/commentDelete";
+		}
+		
+		System.out.println("삭제");
+		boardService.commentDelete(commentVo);
+		return "redirect:/board/view?boardNo=" + commentVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd;
 	}
 	
-	@RequestMapping(value = "/commentReply/{commentNo}/{boardNo}", method = RequestMethod.GET)
-	public String commentReply(HttpSession session, Model model, @ModelAttribute CommentVo cVo)
+	@RequestMapping(value = "/commentReply", method = RequestMethod.GET)
+	public String commentReply(@AuthUser UserVo userVo, 
+							   Model model, 
+							   @ModelAttribute CommentVo cVo)
 	{
-		if( session.getAttribute("authuser") == null)
+		if( userVo == null)
 		{
-			model.addAttribute("commentNo", cVo.getCommentNo());
-			model.addAttribute("boardNo", cVo.getBoardNo());
 			return "board/commentReply";
 		}
 		else
 		{
-			UserVo sessionVo = (UserVo)session.getAttribute("authuser");
-			model.addAttribute("commentNo", cVo.getCommentNo());
-			model.addAttribute("boardNo", cVo.getBoardNo());
-			model.addAttribute("session", sessionVo);
+			model.addAttribute("session", userVo);
 			return "board/commentReply";
 		}
 	}
 	
-	@RequestMapping(value = "/commentReply/{commentNo}/{boardNo}", method = RequestMethod.POST)
-	public String commentReply(@ModelAttribute CommentVo cVo)
+	@RequestMapping(value = "/commentReply", method = RequestMethod.POST)
+	public String commentReply( @AuthUser UserVo userVo,
+								@RequestParam(value = "page", required = false) String page,
+			   					@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
+								@ModelAttribute @Valid CommentVo commentVo,
+								BindingResult result,
+								Model model)
+			  				  
 	{
-		boardService.commentReply(cVo);
-		return "redirect:/board/view/" + cVo.getBoardNo(); 
+		if( result.hasErrors())
+		{
+			model.addAllAttributes(result.getModel());
+			model.addAttribute("session", userVo);
+			return "/board/commentReply";
+		}
+		
+		boardService.commentReply(commentVo, userVo);
+		return "redirect:/board/view?boardNo=" + commentVo.getBoardNo() + "&page=" + page + "&kwd=" + kwd; 
 	}
 	
 	@Auth
 	@RequestMapping(value = "/modify", method = RequestMethod.GET)
-	public String modify(@ModelAttribute BoardVo bVo,
-						 @RequestParam(value = "page", required = false) String page,
-						 @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-						Model model)
+	public String modify(@ModelAttribute BoardVo bVo)
 	{
-		model.addAttribute("no", bVo.getNo());
-		model.addAttribute("page", page);
-		model.addAttribute("kwd", kwd);
 		return "board/modify";
 	}
 	
 	@Auth
 	@RequestMapping(value = "/modify", method = RequestMethod.POST)
-	public String modify(@ModelAttribute BoardVo bVo,
+	public String modify(@AuthUser UserVo userVo,
+						 @ModelAttribute @Valid BoardVo bVo,
+						 BindingResult result,
 						 @RequestParam(value = "page", required = false) String page,
 						 @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-						 HttpSession session)
+						 Model model)
 	{
-		//System.out.println("#$%#$%$#%#$% kwd : " + kwd);
-		boardService.modify(bVo, session);
+		if( result.hasErrors())
+		{
+			model.addAllAttributes(result.getModel());
+			return "/board/modify";
+		}
+		
+		boardService.modify(bVo, userVo);
 		return "redirect:/board/view?boardNo=" + bVo.getNo() + "&page=" + page + "&kwd=" + kwd;
 	}
 	
 	@Auth
 	@RequestMapping(value = "/reply", method = RequestMethod.GET)
-	public String reply(@ModelAttribute BoardVo bVo,
-						@RequestParam(value = "page", required = false) String page,
-						@RequestParam(value = "kwd", required = false) String kwd,
-						Model model)
+	public String reply(@ModelAttribute BoardVo bVo)
 	{
-		model.addAttribute("no", bVo.getNo());
-		model.addAttribute("page", page);
-		model.addAttribute("kwd", kwd);
 		return "board/reply";
 	}
 	
 	@Auth
 	@RequestMapping(value = "/reply", method = RequestMethod.POST)
-	public String reply(@ModelAttribute BoardVo bVo, 
+	public String reply(@AuthUser UserVo userVo,
+						@ModelAttribute @Valid BoardVo bVo, 
+						BindingResult result,
 						@RequestParam(value = "page", required = false) String page,
 						@RequestParam(value = "kwd", required = false) String kwd,
-						Model model,
-						HttpSession session)
+						Model model)
 	{		
+		if( result.hasErrors())
+		{
+			model.addAllAttributes(result.getModel());
+			return "/board/reply";
+		}
+		
 		//System.out.println("$@#$@#$@#$ kwd : " + kwd);
-		return "redirect:/board/view?boardNo=" + boardService.reply(bVo, session) + "&page=" + page + "&kwd=" + kwd;
+		return "redirect:/board/view?boardNo=" + boardService.reply(bVo, userVo) + "&page=" + page + "&kwd=" + kwd;
 	}
 	
 	

@@ -3,10 +3,13 @@ package com.douzone.security;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import javax.websocket.Session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -19,7 +22,9 @@ public class AuthLoginInterceptor extends HandlerInterceptorAdapter
 	private UserService userService;
 	
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+	public boolean preHandle(HttpServletRequest request, 
+							 HttpServletResponse response, 
+							 Object handler)
 			throws Exception 
 	{
 		// 컨테이너가 전역범위에 있다   서블릿 컨텍스트에 묶여있다?
@@ -43,7 +48,7 @@ public class AuthLoginInterceptor extends HandlerInterceptorAdapter
 		
 		if( userVo == null)
 		{
-			response.sendRedirect(request.getContextPath() + "/user/login");
+			response.sendRedirect(request.getContextPath() + "/user/login?result=fail");
 			return false;
 		}
 		
