@@ -32,7 +32,7 @@ public class GlobalExceptionHandler // 모든 컨트롤러의 익셉션 처리
 		// 1. 로깅작업
 		StringWriter errors = new StringWriter(); // 화면에 뿌리기위해서  메모리에 연결되어있음
 		e.printStackTrace(new PrintWriter(errors)); // 화면에다 뿌리게 되어있는 메모리에 뿌리게함
-		//LOG.error(errors.toString());  //파일로 저장하기위해선 string으로 바꿔야해서
+		LOG.error(errors.toString());  //파일로 저장하기위해선 string으로 바꿔야해서
 		
 		// 2. 시스템 오류 안내 페이지 전환
 //		ModelAndView mav = new ModelAndView();
