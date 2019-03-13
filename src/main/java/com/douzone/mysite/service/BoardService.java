@@ -1,11 +1,8 @@
 package com.douzone.mysite.service;
 
-import java.util.HashMap;
+import java.util.HashMap; 
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +15,6 @@ import com.douzone.mysite.vo.BoardPagingFrameWorkVo;
 import com.douzone.mysite.vo.BoardVo;
 import com.douzone.mysite.vo.CommentVo;
 import com.douzone.mysite.vo.UserVo;
-import com.douzone.security.AuthUser;
 
 @Service
 public class BoardService 
