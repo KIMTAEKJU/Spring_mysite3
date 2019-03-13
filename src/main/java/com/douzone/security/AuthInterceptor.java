@@ -1,7 +1,5 @@
 package com.douzone.security;
 
-import java.util.logging.Handler;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
