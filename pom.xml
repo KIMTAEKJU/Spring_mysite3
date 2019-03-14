@@ -153,6 +153,13 @@
 							<exclude>**/*.java</exclude> <!-- war파일을 만들때 maven이 이걸보고 만듬 -->
 						</excludes>
 					</resource>
+					
+					<resource>
+						<directory>${project.basedir}/src/production/resource</directory>
+						<excludes>
+							<exclude>**/*.java</exclude> <!-- war파일을 만들때 maven이 이걸보고 만듬 -->
+						</excludes>
+					</resource>
 				</resources>
 				<plugins>
 					<plugin>

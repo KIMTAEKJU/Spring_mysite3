@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd 
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd 
+        http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd 
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd 
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<!-- Connection Pool DataSource -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"> 
+      <property name="driverClassName" value="com.mysql.jdbc.Driver" /> 
+      <property name="url" value="jdbc:mysql://218.39.221.98:3306/webdb?characterEncoding=utf8&amp;aserverTimezone=UTC" /> <!-- MYSQL 5대는 문제가안되지만 8이넘어가면 문제가될수있어서 해줌 -->
+      <property name="username" value="webdb" /> 
+      <property name="password" value="webdb" />
+      <property name="initialSize" value="20"/>
+      <property name="maxActive" value="20"/> 
+   </bean>
+   
+   	<!-- MyBatis SqlSessionFactoryBean --> <!-- 세터,게터로 di -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">    
+      <property name="dataSource" ref="dataSource" /> <!-- 셋터 메소드 호출 없으면 오류 스캐닝해서 찔러주는애가 아니라서 -->
+                                         			 <!-- 데이터소스를 가져와서 찔러넣어줌 -->
+      <property name="configLocation"
+         value="classpath:mybatis/configuration.xml" /> <!-- classes 바로밑에 mybatis밑에 -->
+   </bean>
+	
+	<!-- MyBatis SqlSessionTemplate -->  <!-- 생성자로 di -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" /> <!-- 인덱스는 세션팩토리도받고 스트링도받아야한다면  -->
+		<!--  <constructor-arg index="0" ref="sqlSessionFactory" />  파라미터가 2개일때 파라미터 순서 구분하기위해서 -->
+	</bean>
+	
+	<!--  auto proxy -->
+	 <aop:aspectj-autoproxy />
+	 
+	<context:annotation-config />
+
+	<context:component-scan
+		base-package="com.douzone.mysite.repository, com.douzone.mysite.service, com.douzone.mysite.exception, com.douzone.mysite.aspect"> <!-- 좀더 빨리 스캐닝 -->
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Repository" />
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Service" />
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Component" />
+	</context:component-scan>
+	
+</beans> 
