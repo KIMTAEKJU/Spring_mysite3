@@ -14,7 +14,7 @@
 	<aop:aspectj-autoproxy />
 
 	<!-- validator(값 맞는 지 확인), conversionService, messageConverter를 자동 등록 -->
-	<mvc:annotation-driven>
+	<mvc:annotation-driven>	<!-- @EnableMvc -->
 
 		<!-- Message Converter -->
 		<mvc:message-converters>
